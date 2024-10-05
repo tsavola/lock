@@ -15,3 +15,11 @@ func Guard(lock sync.Locker, f func()) {
 	defer lock.Unlock()
 	f()
 }
+
+// Guarded invokes f while keeping the lock locked.  The return value is
+// passed through.
+func Guarded[T any](lock sync.Locker, f func() T) T {
+	lock.Lock()
+	defer lock.Unlock()
+	return f()
+}
