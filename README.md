@@ -14,8 +14,6 @@ func ExampleLock() {
 		count++
 	})
 
-	// Go 1.18:
-
 	n := lock.Guarded(&mu, func() int {
 		return count
 	})
