@@ -28,6 +28,33 @@ func ExampleGuard() {
 	fmt.Println(n)
 }
 
+func ExampleTagMutex() {
+	type countLocked struct{}
+
+	var (
+		mu    lock.TagMutex[countLocked]
+		count int
+	)
+
+	incrementWithLock := func(l countLocked) {
+		count++
+	}
+
+	readWithLock := func(l countLocked) int {
+		return count
+	}
+
+	lock.GuardTag(&mu, func(l countLocked) {
+		incrementWithLock(l)
+	})
+
+	n := lock.GuardTagged(&mu, func(l countLocked) int {
+		return readWithLock(l)
+	})
+	fmt.Println(n)
+}
+
 func TestLock(t *testing.T) {
 	ExampleGuard()
+	ExampleTagMutex()
 }

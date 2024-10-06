@@ -30,4 +30,30 @@ func ExampleUnlock() {
 		time.Sleep(time.Second)
 	})
 }
+
+func ExampleTagLock() {
+	type countLocked struct{}
+
+	var (
+		mu    lock.TagMutex[countLocked]
+		count int
+	)
+
+	incrementWithLock := func(l countLocked) {
+		count++
+	}
+
+	readWithLock := func(l countLocked) int {
+		return count
+	}
+
+	lock.GuardTag(&mu, func(l countLocked) {
+		incrementWithLock(l)
+	})
+
+	n := lock.GuardTagged(&mu, func(l countLocked) int {
+		return readWithLock(l)
+	})
+	fmt.Println(n)
+}
 ```
